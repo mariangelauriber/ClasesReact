@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerCitizen } from "../services/authService";
 import { traducirErrorFirebase } from "../lib/firebaseErrors";
+import { isValidDni } from "../lib/validation";
 import { Loading } from "../components/Loading";
 
 const initialForm = { nombre: "", apellidos: "", dni: "", email: "", password: "" };
-const DNI_REGEX = /^\d{8}[A-Za-z]$/;
 
 export function RegisterPage() {
   const navigate = useNavigate();
@@ -22,8 +22,8 @@ export function RegisterPage() {
     event.preventDefault();
     setError(null);
 
-    if (!DNI_REGEX.test(form.dni.trim())) {
-      setError("El DNI debe tener 8 números y una letra (ej. 12345678Z).");
+    if (!isValidDni(form.dni)) {
+      setError("Introduce un DNI válido, con la letra correcta (ej. 12345678Z).");
       return;
     }
 
@@ -45,7 +45,7 @@ export function RegisterPage() {
   if (loading) return <Loading />;
 
   return (
-    <section className="mx-auto max-w-md rounded-xl border bg-white p-6 shadow-sm">
+    <section className="panel mx-auto max-w-md">
       <h2 className="text-xl font-bold text-slate-900">Crear cuenta de ciudadano</h2>
       <p className="mt-1 text-sm text-slate-500">
         Empezarás con 8 puntos en tu carné, como marca la normativa de la DGT.
@@ -63,7 +63,7 @@ export function RegisterPage() {
               required
               value={form.nombre}
               onChange={handleChange}
-              className="w-full rounded-md border border-gray-300 p-2"
+              className="field"
             />
           </div>
           <div>
@@ -76,7 +76,7 @@ export function RegisterPage() {
               required
               value={form.apellidos}
               onChange={handleChange}
-              className="w-full rounded-md border border-gray-300 p-2"
+              className="field"
             />
           </div>
         </div>
@@ -92,7 +92,7 @@ export function RegisterPage() {
             placeholder="12345678Z"
             value={form.dni}
             onChange={handleChange}
-            className="w-full rounded-md border border-gray-300 p-2 uppercase"
+            className="field uppercase"
           />
         </div>
 
@@ -106,7 +106,7 @@ export function RegisterPage() {
             required
             value={form.email}
             onChange={handleChange}
-            className="w-full rounded-md border border-gray-300 p-2"
+            className="field"
           />
         </div>
 
@@ -121,14 +121,11 @@ export function RegisterPage() {
             minLength={6}
             value={form.password}
             onChange={handleChange}
-            className="w-full rounded-md border border-gray-300 p-2"
+            className="field"
           />
         </div>
 
-        <button
-          type="submit"
-          className="rounded-md bg-cyan-500 py-2 px-4 text-white hover:bg-cyan-600"
-        >
+        <button type="submit" className="button-primary w-full">
           Crear cuenta
         </button>
       </form>
@@ -137,7 +134,7 @@ export function RegisterPage() {
 
       <p className="mt-6 text-center text-sm text-slate-500">
         ¿Ya tienes cuenta?{" "}
-        <Link to="/login" className="font-medium text-cyan-600 hover:underline">
+        <Link to="/login" className="font-medium text-primary hover:underline">
           Inicia sesión
         </Link>
       </p>

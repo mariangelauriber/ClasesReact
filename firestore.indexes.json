@@ -1,0 +1,13 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "infracciones",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "uidCiudadano", "order": "ASCENDING" },
+        { "fieldPath": "fecha", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

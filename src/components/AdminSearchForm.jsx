@@ -24,7 +24,7 @@ export function AdminSearchForm({ onSearch }) {
         <select
           value={modo}
           onChange={(event) => setModo(event.target.value)}
-          className="rounded-md border border-gray-300 p-2"
+          className="field sm:w-auto"
         >
           <option value="dni">DNI</option>
           <option value="email">Email</option>
@@ -40,15 +40,11 @@ export function AdminSearchForm({ onSearch }) {
           value={valor}
           onChange={(event) => setValor(event.target.value)}
           placeholder={modo === "dni" ? "12345678Z" : "persona@email.com"}
-          className="w-full rounded-md border border-gray-300 p-2"
+          className="field"
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={searching}
-        className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-      >
+      <button type="submit" disabled={searching} className="button-primary">
         {searching ? "Buscando..." : "Buscar"}
       </button>
     </form>

@@ -8,11 +8,13 @@ import {
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
-export function subscribeToVehicles(uid, onChange) {
+export function subscribeToVehicles(uid, onChange, onError) {
   const ref = collection(db, "users", uid, "vehiculos");
-  return onSnapshot(ref, (snap) => {
-    onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-  });
+  return onSnapshot(
+    ref,
+    (snap) => onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+    onError,
+  );
 }
 
 export async function addVehicle(uid, { matricula, marca, modelo, anio }) {

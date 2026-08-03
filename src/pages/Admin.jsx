@@ -33,6 +33,8 @@ export function AdminPage() {
   const [infraccionesState, setInfraccionesState] = useState({ uid: null, data: [] });
   const [searchNotFound, setSearchNotFound] = useState(false);
   const [notice, setNotice] = useState(null);
+  const [adjustingPoints, setAdjustingPoints] = useState(false);
+  const [togglingLicense, setTogglingLicense] = useState(false);
 
   useEffect(() => {
     if (!selectedUid) return undefined;
@@ -89,18 +91,24 @@ export function AdminPage() {
   };
 
   const handleAdjustPoints = async (delta) => {
+    setAdjustingPoints(true);
     try {
       await adjustPoints(citizen.id, delta);
     } catch (err) {
       setNotice({ type: "error", message: traducirErrorFirebase(err) });
+    } finally {
+      setAdjustingPoints(false);
     }
   };
 
   const handleToggleLicense = async () => {
+    setTogglingLicense(true);
     try {
       await setLicenseRetired(citizen.id, !citizen.permisoRetirado);
     } catch (err) {
       setNotice({ type: "error", message: traducirErrorFirebase(err) });
+    } finally {
+      setTogglingLicense(false);
     }
   };
 
@@ -114,7 +122,7 @@ export function AdminPage() {
         </p>
       </div>
 
-      <section className="rounded-xl border bg-white p-6 shadow-sm">
+      <section className="panel">
         <AdminSearchForm onSearch={handleSearch} />
         {searchNotFound && (
           <p className="mt-4 text-sm text-red-500">
@@ -135,7 +143,7 @@ export function AdminPage() {
 
       {citizen && (
         <>
-          <section className="rounded-xl border bg-white p-6 shadow-sm">
+          <section className="panel">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h3 className="text-lg font-semibold text-slate-900">
@@ -148,33 +156,40 @@ export function AdminPage() {
 
               <button
                 onClick={handleToggleLicense}
-                className={`rounded-md px-4 py-2 text-sm font-medium text-white ${
+                disabled={togglingLicense}
+                className={`inline-flex items-center justify-center rounded-lg px-4 py-2.5 font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-55 ${
                   citizen.permisoRetirado
                     ? "bg-emerald-600 hover:bg-emerald-700"
                     : "bg-red-600 hover:bg-red-700"
                 }`}
               >
-                {citizen.permisoRetirado ? "Devolver permiso" : "Retirar permiso"}
+                {togglingLicense
+                  ? "Guardando..."
+                  : citizen.permisoRetirado
+                    ? "Devolver permiso"
+                    : "Retirar permiso"}
               </button>
             </div>
 
             <div className="mt-4 grid gap-6 sm:grid-cols-2">
               <PointsCard puntos={citizen.puntos} permisoRetirado={citizen.permisoRetirado} />
 
-              <div className="rounded-xl border p-4">
+              <div className="rounded-xl border border-slate-200 p-4">
                 <h4 className="text-sm font-medium text-slate-500">
                   Ajuste manual de puntos
                 </h4>
                 <div className="mt-3 flex gap-2">
                   <button
                     onClick={() => handleAdjustPoints(-1)}
-                    className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium hover:bg-slate-50"
+                    disabled={adjustingPoints}
+                    className="button-secondary px-3 py-1.5 text-sm"
                   >
                     -1 punto
                   </button>
                   <button
                     onClick={() => handleAdjustPoints(1)}
-                    className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium hover:bg-slate-50"
+                    disabled={adjustingPoints}
+                    className="button-secondary px-3 py-1.5 text-sm"
                   >
                     +1 punto
                   </button>
@@ -183,14 +198,14 @@ export function AdminPage() {
             </div>
           </section>
 
-          <section className="rounded-xl border bg-white p-6 shadow-sm">
+          <section className="panel">
             <h3 className="text-lg font-semibold text-slate-900">Poner una multa</h3>
             <div className="mt-4">
               <InfractionForm vehiculos={vehiculos} onSubmit={handleCreateInfraction} />
             </div>
           </section>
 
-          <section className="rounded-xl border bg-white p-6 shadow-sm">
+          <section className="panel">
             <h3 className="text-lg font-semibold text-slate-900">Vehículos</h3>
             <div className="mt-4">
               <VehicleList
@@ -203,7 +218,7 @@ export function AdminPage() {
             </div>
           </section>
 
-          <section className="rounded-xl border bg-white p-6 shadow-sm">
+          <section className="panel">
             <h3 className="text-lg font-semibold text-slate-900">
               Historial de infracciones
             </h3>

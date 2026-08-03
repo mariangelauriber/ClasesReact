@@ -1,8 +1,31 @@
 @import "tailwindcss";
 
-@theme{
-    --color-primary: #6B46C1;
-    --color-secondary: #9FFAEA;
-    --color-card: #9FFAEA;
+@theme {
+  --color-primary: #003366;
+  --color-primary-dark: #001f3f;
+  --color-primary-soft: #e7edf5;
+  --color-accent: #ffd700;
+  --color-accent-dark: #b38f00;
+  --color-ink: #1c2733;
+  --color-surface: #f4f6f8;
 }
 
+@layer base {
+  html { color-scheme: light; }
+  body {
+    min-width: 320px;
+    margin: 0;
+    background: #f4f6f8;
+    color: #1c2733;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  button, input, select { font: inherit; }
+  button, a, input, select { outline-color: #003366; outline-offset: 2px; }
+}
+
+@layer components {
+  .panel { @apply rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6; }
+  .field { @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-900 transition placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/15; }
+  .button-primary { @apply inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2.5 font-semibold text-white transition hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-55; }
+  .button-secondary { @apply inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-55; }
+}

@@ -9,8 +9,8 @@ export const NavbarLink = ({ destino, children }) => {
         cn(
           "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
           isActive
-            ? "bg-blue-600 text-white"
-            : "text-slate-600 hover:bg-slate-100",
+            ? "bg-primary-soft text-primary-dark"
+            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
         )
       }
     >

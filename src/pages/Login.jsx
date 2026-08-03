@@ -32,7 +32,7 @@ export function LoginPage() {
   if (loading) return <Loading />;
 
   return (
-    <section className="mx-auto max-w-md rounded-xl border bg-white p-6 shadow-sm">
+    <section className="panel mx-auto max-w-md">
       <h2 className="text-xl font-bold text-slate-900">Iniciar sesión</h2>
       <p className="mt-1 text-sm text-slate-500">
         Accede a tu carné por puntos con tu email y contraseña.
@@ -43,12 +43,7 @@ export function LoginPage() {
           <label className="mb-1 block text-sm font-medium text-slate-700">
             Email
           </label>
-          <input
-            type="email"
-            name="email"
-            required
-            className="w-full rounded-md border border-gray-300 p-2"
-          />
+          <input type="email" name="email" required className="field" />
         </div>
 
         <div>
@@ -60,14 +55,11 @@ export function LoginPage() {
             name="password"
             required
             minLength={6}
-            className="w-full rounded-md border border-gray-300 p-2"
+            className="field"
           />
         </div>
 
-        <button
-          type="submit"
-          className="rounded-md bg-cyan-500 py-2 px-4 text-white hover:bg-cyan-600"
-        >
+        <button type="submit" className="button-primary w-full">
           Iniciar sesión
         </button>
       </form>
@@ -76,7 +68,7 @@ export function LoginPage() {
 
       <p className="mt-6 text-center text-sm text-slate-500">
         ¿No tienes cuenta?{" "}
-        <Link to="/register" className="font-medium text-cyan-600 hover:underline">
+        <Link to="/register" className="font-medium text-primary hover:underline">
           Regístrate
         </Link>
       </p>

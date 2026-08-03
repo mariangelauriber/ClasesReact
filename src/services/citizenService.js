@@ -12,11 +12,13 @@ import {
 import { db } from "../lib/firebase";
 import { PUNTOS_MAXIMOS } from "../lib/constants";
 
-export function subscribeToCitizenProfile(uid, onChange) {
+export function subscribeToCitizenProfile(uid, onChange, onError) {
   const ref = doc(db, "users", uid);
-  return onSnapshot(ref, (snap) => {
-    onChange(snap.exists() ? { id: snap.id, ...snap.data() } : null);
-  });
+  return onSnapshot(
+    ref,
+    (snap) => onChange(snap.exists() ? { id: snap.id, ...snap.data() } : null),
+    onError,
+  );
 }
 
 export async function searchCitizenByDni(dni) {

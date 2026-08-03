@@ -55,15 +55,17 @@ export async function createInfraction({
   return infraccionRef.id;
 }
 
-export function subscribeToInfractionsByCitizen(uid, onChange) {
+export function subscribeToInfractionsByCitizen(uid, onChange, onError) {
   const q = query(
     collection(db, "infracciones"),
     where("uidCiudadano", "==", uid),
     orderBy("fecha", "desc"),
   );
-  return onSnapshot(q, (snap) => {
-    onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-  });
+  return onSnapshot(
+    q,
+    (snap) => onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+    onError,
+  );
 }
 
 export async function markInfractionPaid(infractionId) {

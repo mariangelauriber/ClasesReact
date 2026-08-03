@@ -17,7 +17,7 @@ export function PointsCard({ puntos, permisoRetirado }) {
   const tone = toneForPoints(puntos);
 
   return (
-    <div className="rounded-xl border bg-white p-6 shadow-sm">
+    <div className="panel">
       <h3 className="text-sm font-medium text-slate-500">Saldo de puntos</h3>
 
       <div className="mt-2 flex items-end gap-2">
