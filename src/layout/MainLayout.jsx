@@ -9,9 +9,11 @@ export function MainLayout() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">
-              React Dashboard App
+              DGT · Carné por puntos
             </h1>
-            <p className="text-sm text-slate-500">SPA conectada a backend</p>
+            <p className="text-sm text-slate-500">
+              Gestión de puntos, multas y vehículos
+            </p>
           </div>
 
           <Navbar />

@@ -1,51 +1,68 @@
 import { useState } from "react";
-import { login } from "../services/authService";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { loginUser } from "../services/authService";
+import { traducirErrorFirebase } from "../lib/firebaseErrors";
 import { Loading } from "../components/Loading";
 
 export function LoginPage() {
-  const [data, setData] = useState([]);
+  const navigate = useNavigate();
+  const location = useLocation();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+  const from = location.state?.from ?? "/";
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const email = event.target.email.value.trim();
+    const password = event.target.password.value;
+
+    setError(null);
     setLoading(true);
-
     try {
-      const response = await login(email, password);
-      setData(response.user);
-    } catch (error) {
-      setError(error);
+      await loginUser(email, password);
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError(traducirErrorFirebase(err));
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading === true) return <Loading />;
+  if (loading) return <Loading />;
+
   return (
     <section className="mx-auto max-w-md rounded-xl border bg-white p-6 shadow-sm">
       <h2 className="text-xl font-bold text-slate-900">Iniciar sesión</h2>
-      {data && (
-        <p className="mt-4 text-green-500">
-          Login successful! Usuario: {data.name}
-        </p>
-      )}
+      <p className="mt-1 text-sm text-slate-500">
+        Accede a tu carné por puntos con tu email y contraseña.
+      </p>
+
       <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
-        <label>Email</label>
-        <input
-          type="email"
-          name="email"
-          className="border border-gray-300 rounded-md p-2"
-        ></input>
-        <label>Password</label>
-        <input
-          type="password"
-          name="password"
-          className="border border-gray-300 rounded-md p-2"
-        ></input>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            required
+            className="w-full rounded-md border border-gray-300 p-2"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            Contraseña
+          </label>
+          <input
+            type="password"
+            name="password"
+            required
+            minLength={6}
+            className="w-full rounded-md border border-gray-300 p-2"
+          />
+        </div>
 
         <button
           type="submit"
@@ -54,11 +71,15 @@ export function LoginPage() {
           Iniciar sesión
         </button>
       </form>
-      {error !== null && (
-        <p className="mt-4 text-red-500">
-          Error: {error.response?.data?.message || error.message}
-        </p>
-      )}
+
+      {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
+
+      <p className="mt-6 text-center text-sm text-slate-500">
+        ¿No tienes cuenta?{" "}
+        <Link to="/register" className="font-medium text-cyan-600 hover:underline">
+          Regístrate
+        </Link>
+      </p>
     </section>
   );
 }

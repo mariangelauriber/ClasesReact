@@ -1,0 +1,68 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
+    match /users/{uid} {
+      // Un ciudadano solo lee su propio perfil; un admin puede leer y buscar cualquiera.
+      allow read: if isOwner(uid) || isAdmin();
+
+      // Alta de cuenta: solo puedes crear tu propio documento, siempre como
+      // "ciudadano", con los puntos iniciales y el permiso vigente. Nadie puede
+      // autoasignarse el rol admin ni empezar con otros valores.
+      allow create: if isOwner(uid)
+        && request.resource.data.uid == uid
+        && request.resource.data.role == "ciudadano"
+        && request.resource.data.puntos == 8
+        && request.resource.data.permisoRetirado == false;
+
+      // Solo un admin puede modificar puntos, permisoRetirado o el rol de un
+      // ciudadano. Un ciudadano no puede tocar su propio documento.
+      allow update: if isAdmin();
+      allow delete: if false;
+
+      match /vehiculos/{vehiculoId} {
+        // El dueño gestiona sus propios vehículos; un admin puede gestionar los
+        // de cualquier ciudadano (alta/edición/baja desde el panel de admin).
+        allow read, create, update, delete: if isOwner(uid) || isAdmin();
+      }
+    }
+
+    match /infracciones/{infraccionId} {
+      // Un ciudadano solo lee sus propias infracciones; un admin lee todas.
+      allow read: if isSignedIn() &&
+        (isAdmin() || resource.data.uidCiudadano == request.auth.uid);
+
+      // Solo un admin puede poner una multa, y debe quedar registrado como autor.
+      allow create: if isAdmin()
+        && request.resource.data.creadaPorUid == request.auth.uid
+        && request.resource.data.gravedad in ["leve", "grave", "muy_grave"]
+        && request.resource.data.puntosRestados is int
+        && request.resource.data.puntosRestados >= 0
+        && request.resource.data.importe is number
+        && request.resource.data.importe >= 0
+        && request.resource.data.estado == "pendiente";
+
+      // Solo un admin puede actualizar una infracción, y únicamente su estado
+      // de pago (no puede alterar puntos, importe ni al ciudadano implicado).
+      allow update: if isAdmin() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(["estado"]);
+
+      allow delete: if false;
+    }
+  }
+}
